@@ -1,0 +1,33 @@
+html,
+body {
+  height: 100%;
+}
+
+html {
+  font-size: 125%;
+  line-height: 1.4;
+  font-family: Helvetica;
+}
+
+body {
+  box-sizing: border-box;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-rows: auto auto 2fr;
+  grid-template-areas:
+    "header header header"
+    "add-quotes update-quote delete-quote"
+    "quotes quotes quotes";
+  gap: 1rem;
+  margin: 0;
+  padding: 4rem;
+  background-color: #372ae4;
+  
+}
+
+
+
+h1,
+h2 {
+  margin: 0;
+}

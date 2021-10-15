@@ -1,51 +1,63 @@
-
-//Create const to require using express
+console.log("hello")
+const _dirname = "/run/media/foxm/Shared_Space/MATC/Fifth Semester/Web Prog/Project 1/Steven_Lantz_p1/index.html"
 const express = require('express');
-/*bodyParser has been deprecated
-const bodyParser = require('body-parser'); //Middleware that will tidy up request object before we use them*/
 const app = express();
-const MongoClient = require('mongodb').MongoClient;
+const MongoClient = require('mongodb').MongoClient
 const connectionString = "mongodb+srv://fMulder:trustno1skully@cluster-p1.1vfvy.mongodb.net/myFirstDatabase?retryWrites=true&w=majority"
 
-//Create server that browsers can connect to
-app.listen(3000, ()=>{
-    console.log('listening on 3000')
-});
-
-/*urlencoded method tells body-parser(now deprecated-which used to be imported from express) to 
-extract data from the <form> and add them to the body property in the req obj*/
-app.use(express.urlencoded({extended: true}));
-//app.use(express.json('package.json'));
-
-//Handle get request and callback
-const _dirName = "/run/media/foxm/Shared_Space/MATC/Fifth Semester/Web Prog/Project 1/Steven_Lantz_p1"
-
-app.get('/', (req, res)=> {
-   res.sendFile(_dirName + '/index.html')
-});
 
 
 
-//Handle post request
-//insertOne to add items into our collection
-app.post('/quotes', (req, res)=> {
-    quotesCollection.insertOne(req.body)
-    .then(result => {
-      console.log(result)
-    })
-    .catch(error => console.error(error))
-});
-
+//Connecting to our database
 MongoClient.connect(connectionString, { useUnifiedTopology: true })
   .then(client => {
     console.log('Connected to Database')
-    const db = client.db('star-wars-quotes')
+    const db = client.db('SW-Quotes')
     const quotesCollection = db.collection('quotes')
-    app.use(/* ... */)
-    app.get(/* ... */)
-    app.post(/* ... */)
-    app.listen(/* ... */)
-  }).catch(console.error)
+
+    //Telling express we're using EJS as a template engine
+    app.set('view engine', 'ejs')
+    
+
+    //View is the name of the file that we're rendering
+    //locals is the data passed into the file
+    //res.render(view, locals)
+    
+    //Place middleware before CRUD handlers
+    app.use(express.urlencoded({extended: true}))
+    app.use(express.static('public'))
+    
+
+    //Express request handlers
+    app.get('/', (req, res) => {
+      db.collection('quotes').find().toArray()
+    .then(results => {
+       res.render('index.ejs', {quotes: results})
+    })
+    .catch(error => console.error(error))
+   
+    })
+    
+    app.post('/quotes', (req, res) => {
+    quotesCollection.insertOne(req.body)
+    .then(result => {
+      res.redirect('/')
+    })
+    .catch(error => console.error(error))
+    
+  })
+    
+    app.listen(3000, function() {
+    console.log('listening on 3000')
+    })
+    
+  })
+  .catch(error => console.error(error))
+
+
+
+
+
 
 
 
